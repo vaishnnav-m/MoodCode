@@ -1,0 +1,7 @@
+Read MOODCODE_CONTEXT.md before every response.
+
+Key reminders:
+- MVP only — time signal, no Spotify, no weather, no git
+- No auth system, userId is a UUID from VS Code globalState
+- shared/ types are source of truth, change there first
+- Extension must work offline without the backend
