@@ -13,6 +13,7 @@ export interface CommandsDeps {
 	overrideManager: OverrideManager;
 	onRefresh: () => void | Promise<void>;
 	dashboardUrl?: string;
+	userId: string;
 }
 
 function formatMoodLabel(mood: MoodName): string {
@@ -68,7 +69,7 @@ export function registerCommands(
 		}),
 
 		vscode.commands.registerCommand('moodcode.openDashboard', async () => {
-			await vscode.env.openExternal(vscode.Uri.parse(dashboardUrl));
+			await vscode.env.openExternal(vscode.Uri.parse(`${dashboardUrl}/?userId=${deps.userId}`));
 		}),
 	);
 }

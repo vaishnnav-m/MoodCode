@@ -1,9 +1,19 @@
 {
   "name": "moodcode",
   "private": true,
-  "workspaces": ["shared", "extension", "backend", "dashboard"],
+  "workspaces": [
+    "shared",
+    "extension",
+    "backend",
+    "dashboard"
+  ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present"
+    "build": "npm run compile -w shared && npm run build --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
+    "dev": "npm run compile -w shared && concurrently \"npm run dev -w backend\" \"npm run dev -w dashboard\"",
+    "compile": "npm run compile -w shared && npm run compile -w extension"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

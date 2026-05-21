@@ -2,10 +2,22 @@
   "name": "@moodcode/shared",
   "version": "0.0.1",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "compile": "tsc -p ./",
+    "build": "npm run compile",
+    "compile": "npm run clean && tsc -p tsconfig.cjs.json && node scripts/ensure-esm-package.cjs && tsc -p tsconfig.esm.json",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "devDependencies": {

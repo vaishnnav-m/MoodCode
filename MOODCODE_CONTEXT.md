@@ -83,8 +83,12 @@ shared/
 │       ├── themes.ts        # Default mood → VS Code theme name mappings
 │       └── brackets.ts      # Default time bracket config (out-of-box experience)
 ├── package.json
-└── tsconfig.json
+├── tsconfig.base.json
+├── tsconfig.cjs.json       # → dist/cjs (Node / extension)
+└── tsconfig.esm.json       # → dist/esm (Vite / dashboard)
 ```
+
+**Build:** `npm run compile -w shared` emits dual packages — `dist/cjs` for `require`, `dist/esm` for `import` (see `package.json` `exports`). Run after changing shared source.
 
 **Key types:**
 

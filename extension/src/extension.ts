@@ -101,12 +101,6 @@ export function activate(context: vscode.ExtensionContext): void {
 		}
 	}
 
-	registerCommands(context, {
-		overrideManager,
-		onRefresh: evaluateAndApply,
-		dashboardUrl,
-	});
-
 	void (async () => {
 		const userId = await getOrCreateUserId(context);
 
@@ -115,6 +109,13 @@ export function activate(context: vscode.ExtensionContext): void {
 			brackets = remoteConfig.brackets;
 			themeMappings = remoteConfig.themeMappings;
 		}
+
+		registerCommands(context, {
+			overrideManager,
+			onRefresh: evaluateAndApply,
+			dashboardUrl,
+			userId,
+		});
 
 		const wsClient = createWsClient(wsUrl, userId, (updatedBrackets) => {
 			brackets = updatedBrackets;
@@ -137,4 +138,4 @@ export function activate(context: vscode.ExtensionContext): void {
 	})();
 }
 
-export function deactivate(): void {}
+export function deactivate(): void { }
