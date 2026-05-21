@@ -1,7 +1,7 @@
 {
   "name": "moodcode",
   "private": true,
-  "workspaces": ["shared", "extension", "backend"],
+  "workspaces": ["shared", "extension", "backend", "dashboard"],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present"

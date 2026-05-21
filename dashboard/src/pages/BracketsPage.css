@@ -1,0 +1,40 @@
+.brackets-page .brackets-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.brackets-page .brackets-table th,
+.brackets-page .brackets-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.brackets-page .brackets-table th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.brackets-page .brackets-table input,
+.brackets-page .brackets-table select {
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  min-width: 4rem;
+}
+
+.brackets-page .brackets-table input[type='number'] {
+  width: 4.5rem;
+}
+
+.brackets-page .brackets-table .theme-label {
+  font-size: 0.9rem;
+  color: var(--text);
+}

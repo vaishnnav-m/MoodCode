@@ -1,0 +1,34 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 0.25rem;
+  padding: 1rem 1.5rem 0;
+  max-width: 720px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-nav a {
+  padding: 0.5rem 0.85rem;
+  text-decoration: none;
+  color: var(--text);
+  border-radius: 8px 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.dashboard-nav a:hover {
+  color: var(--text-h);
+  background: var(--accent-bg);
+}
+
+.dashboard-nav a.active {
+  color: var(--text-h);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-bottom-color: var(--bg);
+  margin-bottom: -1px;
+  background: var(--bg);
+}

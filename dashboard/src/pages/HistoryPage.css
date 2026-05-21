@@ -1,0 +1,12 @@
+.history-page .range-toggle {
+  margin-bottom: 1.25rem;
+}
+
+.history-page .chart-wrap {
+  width: 100%;
+  min-height: 320px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.5rem 0.25rem;
+  background: var(--bg);
+}
