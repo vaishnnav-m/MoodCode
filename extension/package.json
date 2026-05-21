@@ -1,36 +1,104 @@
 {
-  "name": "helloworld",
-  "displayName": "HelloWorld",
-  "description": "",
+  "name": "moodcode",
+  "displayName": "MoodCode",
+  "description": "Switch your VS Code theme automatically based on time of day and your personal mood config.",
   "version": "0.0.1",
+  "publisher": "moodcode",
+  "private": true,
+  "license": "MIT",
   "engines": {
     "vscode": "^1.120.0"
   },
   "categories": [
+    "Themes",
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "theme",
+    "mood",
+    "time",
+    "productivity"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "helloworld.helloWorld",
-        "title": "Hello World"
+        "command": "moodcode.override",
+        "title": "Set Mood Override…",
+        "category": "MoodCode"
+      },
+      {
+        "command": "moodcode.refresh",
+        "title": "Refresh Mood",
+        "category": "MoodCode"
+      },
+      {
+        "command": "moodcode.openDashboard",
+        "title": "Open Dashboard",
+        "category": "MoodCode"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "moodcode.override"
+        },
+        {
+          "command": "moodcode.refresh"
+        },
+        {
+          "command": "moodcode.openDashboard"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "MoodCode",
+      "properties": {
+        "moodcode.backendUrl": {
+          "type": "string",
+          "default": "http://localhost:3001",
+          "description": "Base URL for the MoodCode backend REST API."
+        },
+        "moodcode.wsUrl": {
+          "type": "string",
+          "default": "ws://localhost:3001",
+          "description": "WebSocket URL for real-time config updates from the dashboard."
+        },
+        "moodcode.pollIntervalMs": {
+          "type": "number",
+          "default": 60000,
+          "minimum": 10000,
+          "description": "How often to re-evaluate mood from the time signal (milliseconds)."
+        },
+        "moodcode.dashboardUrl": {
+          "type": "string",
+          "default": "http://localhost:5173",
+          "description": "URL of the MoodCode config dashboard."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "build": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile",
+    "test": "vscode-test",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
+    "build": "npm run compile"
+  },
+  "dependencies": {
+    "@moodcode/shared": "*",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.19",
+    "@types/ws": "^8.18.1",
     "@types/vscode": "^1.120.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",

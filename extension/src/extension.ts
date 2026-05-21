@@ -1,26 +1,140 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+import {
+	DEFAULT_BRACKETS,
+	THEME_DEFAULTS,
+	type MoodName,
+	type TimeBracket,
+	type UserConfig,
+} from '@moodcode/shared';
+import { randomUUID } from 'crypto';
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+import { registerCommands } from './commands';
+import { getMood } from './moodEngine';
+import { createOverrideManager } from './override';
+import { createStatusBar } from './statusBar';
+import { applyTheme } from './themeManager';
+import { createWsClient } from './wsClient';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "helloworld" is now active!');
+const USER_ID_KEY = 'moodcode.userId';
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('helloworld.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello VS Code');
-	});
+let brackets: TimeBracket[] = DEFAULT_BRACKETS;
+let themeMappings: Record<MoodName, string> = { ...THEME_DEFAULTS };
+let currentMood: MoodName | undefined;
 
-	context.subscriptions.push(disposable);
+async function getOrCreateUserId(context: vscode.ExtensionContext): Promise<string> {
+	let userId = context.globalState.get<string>(USER_ID_KEY);
+	if (!userId) {
+		userId = randomUUID();
+		await context.globalState.update(USER_ID_KEY, userId);
+	}
+	return userId;
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function resolveTheme(mood: MoodName): string {
+	return (
+		themeMappings[mood] ??
+		brackets.find((bracket) => bracket.mood === mood)?.theme ??
+		THEME_DEFAULTS[mood]
+	);
+}
+
+async function fetchConfig(backendUrl: string, userId: string): Promise<UserConfig | undefined> {
+	try {
+		const response = await fetch(`${backendUrl}/api/config/${userId}`);
+		if (!response.ok) {
+			return undefined;
+		}
+		return (await response.json()) as UserConfig;
+	} catch {
+		return undefined;
+	}
+}
+
+async function logMoodSwitch(
+	backendUrl: string,
+	userId: string,
+	mood: MoodName,
+	theme: string,
+	source: 'time' | 'override',
+): Promise<void> {
+	try {
+		await fetch(`${backendUrl}/api/logs`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ userId, mood, theme, source }),
+		});
+	} catch {
+		// Backend unavailable — continue without logging.
+	}
+}
+
+export function activate(context: vscode.ExtensionContext): void {
+	const config = vscode.workspace.getConfiguration('moodcode');
+	const backendUrl = config.get<string>('backendUrl', 'http://localhost:3001');
+	const wsUrl = config.get<string>('wsUrl', 'ws://localhost:3001');
+	const dashboardUrl = config.get<string>('dashboardUrl', 'http://localhost:5173');
+	const pollIntervalMs = config.get<number>('pollIntervalMs', 60000);
+
+	const overrideManager = createOverrideManager();
+	const statusBar = createStatusBar();
+	context.subscriptions.push(statusBar);
+
+	async function evaluateAndApply(): Promise<void> {
+		const activeOverride = overrideManager.getActive();
+		const mood = activeOverride ? activeOverride.mood : getMood(brackets);
+		const source = activeOverride ? 'override' : 'time';
+
+		if (mood === currentMood) {
+			statusBar.update(mood);
+			return;
+		}
+
+		currentMood = mood;
+		const theme = resolveTheme(mood);
+
+		await applyTheme(theme);
+		statusBar.update(mood);
+
+		const userId = context.globalState.get<string>(USER_ID_KEY);
+		if (userId) {
+			await logMoodSwitch(backendUrl, userId, mood, theme, source);
+		}
+	}
+
+	registerCommands(context, {
+		overrideManager,
+		onRefresh: evaluateAndApply,
+		dashboardUrl,
+	});
+
+	void (async () => {
+		const userId = await getOrCreateUserId(context);
+
+		const remoteConfig = await fetchConfig(backendUrl, userId);
+		if (remoteConfig) {
+			brackets = remoteConfig.brackets;
+			themeMappings = remoteConfig.themeMappings;
+		}
+
+		const wsClient = createWsClient(wsUrl, userId, (updatedBrackets) => {
+			brackets = updatedBrackets;
+			void evaluateAndApply();
+		});
+
+		await evaluateAndApply();
+
+		const pollTimer = setInterval(() => {
+			if (overrideManager.isActive()) {
+				return;
+			}
+			void evaluateAndApply();
+		}, pollIntervalMs);
+
+		context.subscriptions.push(
+			{ dispose: () => wsClient.dispose() },
+			{ dispose: () => clearInterval(pollTimer) },
+		);
+	})();
+}
+
+export function deactivate(): void {}
