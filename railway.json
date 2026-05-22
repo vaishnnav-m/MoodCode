@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install && cd shared && npm run compile && cd ../backend && npm run build"
+  },
+  "deploy": {
+    "startCommand": "node backend/dist/index.js"
+  }
+}

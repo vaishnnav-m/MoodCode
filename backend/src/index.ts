@@ -29,7 +29,7 @@ async function main(): Promise<void> {
   createWebSocketServer(httpServer);
 
   httpServer.listen(PORT, () => {
-    console.log(`MoodCode backend listening on http://localhost:${PORT}`);
+    console.log(`MoodCode backend listening on port ${PORT}`);
   });
 }
 

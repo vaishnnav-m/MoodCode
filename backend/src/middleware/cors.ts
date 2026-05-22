@@ -1,7 +1,9 @@
 import cors from 'cors';
 
+const allwedorigins = process.env.CORS_ORIGIN || 'http://localhost:5173';
+
 const allowedOrigins = new Set([
-  'http://localhost:5173',
+  allwedorigins,
   'http://127.0.0.1:5173',
 ]);
 
