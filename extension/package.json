@@ -4,54 +4,25 @@
   "description": "Switch your VS Code theme automatically based on time of day and your personal mood config.",
   "version": "0.0.1",
   "publisher": "moodcode",
-  "private": true,
   "license": "MIT",
   "engines": {
     "vscode": "^1.120.0"
   },
-  "categories": [
-    "Themes",
-    "Other"
-  ],
-  "keywords": [
-    "theme",
-    "mood",
-    "time",
-    "productivity"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "categories": ["Themes", "Other"],
+  "keywords": ["theme", "mood", "time", "productivity"],
+  "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "moodcode.override",
-        "title": "Set Mood Override…",
-        "category": "MoodCode"
-      },
-      {
-        "command": "moodcode.refresh",
-        "title": "Refresh Mood",
-        "category": "MoodCode"
-      },
-      {
-        "command": "moodcode.openDashboard",
-        "title": "Open Dashboard",
-        "category": "MoodCode"
-      }
+      { "command": "moodcode.override", "title": "Set Mood Override…", "category": "MoodCode" },
+      { "command": "moodcode.refresh", "title": "Refresh Mood", "category": "MoodCode" },
+      { "command": "moodcode.openDashboard", "title": "Open Dashboard", "category": "MoodCode" }
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "moodcode.override"
-        },
-        {
-          "command": "moodcode.refresh"
-        },
-        {
-          "command": "moodcode.openDashboard"
-        }
+        { "command": "moodcode.override" },
+        { "command": "moodcode.refresh" },
+        { "command": "moodcode.openDashboard" }
       ]
     },
     "configuration": {
@@ -92,32 +63,26 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile && node scripts/bundle-backend.cjs && node scripts/vendor-shared.cjs && node scripts/install-runtime-deps.cjs",
-    "bundle-server": "node scripts/bundle-backend.cjs",
+    "vscode:prepublish": "node scripts/bundle-backend.cjs && npm run bundle",
+    "bundle": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --platform=node --target=node18 --format=cjs --conditions=require --log-level=info",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "test": "vscode-test",
+    "watch": "npm run bundle -- --watch",
     "lint": "eslint src",
     "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
-    "build": "npm run compile",
     "package": "npx @vscode/vsce package"
   },
   "dependencies": {
-    "@moodcode/shared": "file:../shared",
     "ws": "^8.18.3"
   },
-  "bundledDependencies": [
-    "@moodcode/shared",
-    "ws"
-  ],
   "devDependencies": {
+    "@moodcode/shared": "file:../shared",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.19",
     "@types/vscode": "^1.120.0",
     "@types/ws": "^8.18.1",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.28.0",
     "eslint": "^9.39.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"

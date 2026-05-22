@@ -106,6 +106,8 @@ export function activate(context: vscode.ExtensionContext): void {
 		const backendProcess = await startBackendProcess(context);
 		if (backendProcess) {
 			context.subscriptions.push(backendProcess);
+			// Wait for backend to be ready before fetching config
+			await new Promise(resolve => setTimeout(resolve, 2000));
 		}
 
 		const userId = await getOrCreateUserId(context);
