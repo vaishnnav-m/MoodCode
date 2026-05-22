@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 let userId: string | undefined;
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
 /** Axios client for MoodCode REST API (Vite dev proxy: /api → localhost:3001). */
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 

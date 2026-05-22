@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm install && npm run compile -w @moodcode/shared && npm run build -w dashboard",
+  "outputDirectory": "dashboard/dist",
+  "installCommand": "npm install"
+}
