@@ -30,12 +30,12 @@
       "properties": {
         "moodcode.backendUrl": {
           "type": "string",
-          "default": "http://localhost:3001",
+          "default": "https://moode-code-api.onrender.com",
           "description": "Base URL for the MoodCode backend REST API."
         },
         "moodcode.wsUrl": {
           "type": "string",
-          "default": "ws://localhost:3001",
+          "default": "wss://moode-code-api.onrender.com",
           "description": "WebSocket URL for real-time config updates from the dashboard."
         },
         "moodcode.pollIntervalMs": {
@@ -48,22 +48,12 @@
           "type": "string",
           "default": "http://localhost:5173",
           "description": "URL of the MoodCode config dashboard."
-        },
-        "moodcode.autoStartBackend": {
-          "type": "boolean",
-          "default": true,
-          "description": "Start the MoodCode backend automatically when the extension activates."
-        },
-        "moodcode.mongodbUri": {
-          "type": "string",
-          "default": "mongodb://localhost:27017/moodcode",
-          "description": "MongoDB connection string used when the extension starts the bundled backend."
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "node scripts/bundle-backend.cjs && npm run bundle",
+    "vscode:prepublish": "npm run bundle",
     "bundle": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --platform=node --target=node18 --format=cjs --conditions=require --log-level=info",
     "compile": "tsc -p ./",
     "watch": "npm run bundle -- --watch",

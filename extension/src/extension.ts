@@ -7,8 +7,6 @@ import {
 } from '@moodcode/shared';
 import { randomUUID } from 'crypto';
 import * as vscode from 'vscode';
-
-import { startBackendProcess } from './backendProcess.js';
 import { registerCommands } from './commands.js';
 import { getMood } from './moodEngine.js';
 import { createOverrideManager } from './override.js';
@@ -103,13 +101,6 @@ export function activate(context: vscode.ExtensionContext): void {
 	}
 
 	void (async () => {
-		const backendProcess = await startBackendProcess(context);
-		if (backendProcess) {
-			context.subscriptions.push(backendProcess);
-			// Wait for backend to be ready before fetching config
-			await new Promise(resolve => setTimeout(resolve, 2000));
-		}
-
 		const userId = await getOrCreateUserId(context);
 
 		const remoteConfig = await fetchConfig(backendUrl, userId);
