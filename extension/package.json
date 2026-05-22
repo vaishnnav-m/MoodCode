@@ -30,12 +30,12 @@
       "properties": {
         "moodcode.backendUrl": {
           "type": "string",
-          "default": "https://moode-code-api.onrender.com",
+          "default": "https://moodcode-api-production.up.railway.app",
           "description": "Base URL for the MoodCode backend REST API."
         },
         "moodcode.wsUrl": {
           "type": "string",
-          "default": "wss://moode-code-api.onrender.com",
+          "default": "wss://moodcode-api-production.up.railway.app",
           "description": "WebSocket URL for real-time config updates from the dashboard."
         },
         "moodcode.pollIntervalMs": {
@@ -46,7 +46,7 @@
         },
         "moodcode.dashboardUrl": {
           "type": "string",
-          "default": "http://localhost:5173",
+          "default": "https://moodcode-dashboard.vercel.app",
           "description": "URL of the MoodCode config dashboard."
         }
       }
