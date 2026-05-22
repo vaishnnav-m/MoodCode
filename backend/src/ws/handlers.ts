@@ -48,7 +48,9 @@ export async function handleClientMessage(
   switch (parsed.type) {
     case 'register': {
       const { userId } = parsed;
+      console.log(`[WS] User registered: ${userId}`);
       const existing = wsMap.get(userId);
+      console.log(`[WS] Closing existing connection for ${userId}`);
       if (existing && existing !== ws) {
         unregisterSocket(existing, wsMap);
         existing.close();
@@ -58,10 +60,12 @@ export async function handleClientMessage(
       break;
     }
     case 'ping':
+      console.log(`[WS] Ping from ${socketUsers.get(ws)}`);
       send(ws, { type: 'pong' });
       break;
     case 'log_mood': {
       const userId = socketUsers.get(ws);
+      console.log(`[WS] Mood logged: ${userId} → ${parsed.mood} / ${parsed.theme}`);
       if (!userId) {
         return;
       }
