@@ -5,7 +5,7 @@ import {
 	OVERRIDE_DURATION_HOURS,
 	type OverrideDurationHours,
 	type OverrideManager,
-} from './override';
+} from './override.js';
 
 const MOOD_NAMES: MoodName[] = ['morning', 'deep_work', 'post_lunch', 'late_night'];
 

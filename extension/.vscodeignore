@@ -1,11 +1,34 @@
+../**
+
+!out/**
+!server/**
+!package.json
+!README.md
+!CHANGELOG.md
+
 .vscode/**
 .vscode-test/**
 src/**
+scripts/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
+
 **/tsconfig.json
 **/eslint.config.mjs
 **/*.map
 **/*.ts
 **/.vscode-test.*
+
+# Never ship secrets
+**/.env
+**/.env.*
+
+# Problematic duplicated dependency
+node_modules/ws/**
+
+# Build-only artifacts
+vendor/**
+node_modules/.package-lock.json
+
+server/**/*.map

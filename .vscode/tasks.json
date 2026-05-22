@@ -1,11 +1,67 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
 {
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Start MoodCode Backend",
+			"type": "shell",
+			"command": "npm run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "moodcode-backend",
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".",
+					"endsPattern": "MoodCode backend listening on"
+				}
+			},
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated",
+				"group": "moodcode"
+			}
+		},
+		{
+			"label": "Start MoodCode Dashboard",
+			"type": "shell",
+			"command": "npm run dev",
+			"options": {
+				"cwd": "${workspaceFolder}/dashboard"
+			},
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"isBackground": true,
+			"problemMatcher": {
+				"owner": "moodcode-dashboard",
+				"pattern": {
+					"regexp": "^$"
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": ".",
+					"endsPattern": "Local:\\s+http://localhost:5173"
+				}
+			},
+			"presentation": {
+				"reveal": "silent",
+				"panel": "dedicated",
+				"group": "moodcode"
+			}
+		},
+		{
+			"label": "Watch Extension",
 			"type": "npm",
 			"script": "watch",
+			"path": "extension",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {

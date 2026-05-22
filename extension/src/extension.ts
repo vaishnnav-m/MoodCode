@@ -8,12 +8,13 @@ import {
 import { randomUUID } from 'crypto';
 import * as vscode from 'vscode';
 
-import { registerCommands } from './commands';
-import { getMood } from './moodEngine';
-import { createOverrideManager } from './override';
-import { createStatusBar } from './statusBar';
-import { applyTheme } from './themeManager';
-import { createWsClient } from './wsClient';
+import { startBackendProcess } from './backendProcess.js';
+import { registerCommands } from './commands.js';
+import { getMood } from './moodEngine.js';
+import { createOverrideManager } from './override.js';
+import { createStatusBar } from './statusBar.js';
+import { applyTheme } from './themeManager.js';
+import { createWsClient } from './wsClient.js';
 
 const USER_ID_KEY = 'moodcode.userId';
 
@@ -102,6 +103,11 @@ export function activate(context: vscode.ExtensionContext): void {
 	}
 
 	void (async () => {
+		const backendProcess = await startBackendProcess(context);
+		if (backendProcess) {
+			context.subscriptions.push(backendProcess);
+		}
+
 		const userId = await getOrCreateUserId(context);
 
 		const remoteConfig = await fetchConfig(backendUrl, userId);
