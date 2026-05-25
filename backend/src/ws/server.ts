@@ -1,19 +1,24 @@
-import type { TimeBracket, SpotifySignalPayload, WeatherSignalPayload } from '@moodcode/shared';
+import type { TimeBracket, SpotifySignalPayload, WeatherSignalPayload, SignalWeights } from '@moodcode/shared';
 import type { Server } from 'http';
 import { WebSocket, WebSocketServer } from 'ws';
 import { handleClientMessage, unregisterSocket } from './handlers.js';
 
 const wsMap = new Map<string, WebSocket>();
 
-/** Push updated brackets to the extension for this user. */
-export function broadcastConfigUpdate(userId: string, brackets: TimeBracket[]): boolean {
+/** Push updated configuration to the extension for this user. */
+export function broadcastConfigUpdate(
+  userId: string,
+  brackets: TimeBracket[],
+  themeMappings: Record<string, string>,
+  signalWeights: SignalWeights
+): boolean {
   const ws = wsMap.get(userId);
   if (!ws || ws.readyState !== WebSocket.OPEN) {
     console.log(`[WS] Cannot push to ${userId} — not connected`);
     return false;
   }
   console.log(`[WS] Pushing config update to ${userId}`);
-  ws.send(JSON.stringify({ type: 'config_update', brackets }));
+  ws.send(JSON.stringify({ type: 'config_update', brackets, themeMappings, signalWeights }));
   return true;
 }
 

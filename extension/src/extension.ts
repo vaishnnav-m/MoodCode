@@ -123,16 +123,22 @@ export function activate(context: vscode.ExtensionContext): void {
 			console.log(`[MoodCode] Blended mood computed by engine: ${mood} (Primary driver source: ${source}, Max Weight: ${maxWeight}%)`);
 		}
 
-		if (mood === currentMood) {
+		const theme = resolveTheme(mood);
+		const activeTheme = vscode.workspace.getConfiguration('workbench').get<string>('colorTheme');
+
+		if (mood === currentMood && theme === activeTheme) {
 			statusBar.update(mood);
-			console.log(`[MoodCode] Mood '${mood}' matches the current editor state. No theme switch needed.`);
+			console.log(`[MoodCode] Mood '${mood}' and theme '${theme}' match the current editor state. No theme switch needed.`);
 			return;
 		}
 
-		console.log(`[MoodCode] Mood changed! Switching from '${currentMood}' to '${mood}'`);
-		currentMood = mood;
-		const theme = resolveTheme(mood);
+		if (mood !== currentMood) {
+			console.log(`[MoodCode] Mood changed! Switching from '${currentMood}' to '${mood}'`);
+		} else {
+			console.log(`[MoodCode] Theme mapping changed! Applying new theme '${theme}' for mood '${mood}'`);
+		}
 
+		currentMood = mood;
 		console.log(`[MoodCode] Applying VS Code theme mapping: ${theme}`);
 		await applyTheme(theme);
 		statusBar.update(mood);
@@ -166,9 +172,15 @@ export function activate(context: vscode.ExtensionContext): void {
 		const wsClient = createWsClient(
 			wsUrl,
 			userId,
-			(updatedBrackets) => {
-				console.log('[MoodCode] Received brackets configuration update via WebSocket.');
+			(updatedBrackets, updatedThemeMappings, updatedSignalWeights) => {
+				console.log('[MoodCode] Received configuration update via WebSocket.');
 				brackets = updatedBrackets;
+				if (updatedThemeMappings) {
+					themeMappings = { ...themeMappings, ...updatedThemeMappings } as Record<MoodName, string>;
+				}
+				if (updatedSignalWeights) {
+					signalWeights = { ...signalWeights, ...updatedSignalWeights };
+				}
 				void evaluateAndApply();
 			},
 			(spotifyPayload) => {

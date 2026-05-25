@@ -63,7 +63,7 @@ configRouter.put('/:userId', async (req, res) => {
       return;
     }
 
-    broadcastConfigUpdate(userId, user.brackets);
+    broadcastConfigUpdate(userId, user.brackets, user.themeMappings, user.signalWeights);
 
     const config: UserConfig = {
       brackets: user.brackets,
