@@ -5,9 +5,10 @@ interface SignalToggleProps {
   signalName: string;
   weight: number;
   onChange: (weight: number) => void;
+  disabled?: boolean;
 }
 
-export default function SignalToggle({ signalName, weight, onChange }: SignalToggleProps) {
+export default function SignalToggle({ signalName, weight, onChange, disabled = false }: SignalToggleProps) {
   const [prevWeight, setPrevWeight] = useState(weight > 0 ? weight : 50);
   const [prevPropWeight, setPrevPropWeight] = useState(weight);
 
@@ -52,6 +53,9 @@ export default function SignalToggle({ signalName, weight, onChange }: SignalTog
   };
 
   const getSignalDescription = (name: string): string => {
+    if (name === 'spotify' && disabled) {
+      return 'Connect your Spotify account above to enable this signal.';
+    }
     switch (name) {
       case 'time':
         return 'Uses time of day and configured brackets.';
@@ -68,22 +72,24 @@ export default function SignalToggle({ signalName, weight, onChange }: SignalTog
     }
   };
 
-  const isFutureSignal = ['spotify', 'weather', 'git'].includes(signalName);
+  const isFutureSignal = false;
+  const isDisabled = isFutureSignal || disabled;
 
   return (
-    <div className={`signal-toggle-card ${isEnabled ? 'active' : ''} ${isFutureSignal ? 'future-signal' : ''}`}>
+    <div className={`signal-toggle-card ${isEnabled && !isDisabled ? 'active' : ''} ${isDisabled ? 'future-signal' : ''}`}>
       <div className="signal-info">
         <div className="signal-header">
           <h3 className="signal-title">
             {formatSignalName(signalName)}
             {isFutureSignal && <span className="badge">Soon</span>}
+            {signalName === 'spotify' && disabled && <span className="badge">Needs Setup</span>}
           </h3>
           <label className="switch" aria-label={`Toggle ${formatSignalName(signalName)}`}>
             <input
               type="checkbox"
               checked={isEnabled}
               onChange={handleToggle}
-              disabled={isFutureSignal}
+              disabled={isDisabled}
             />
             <span className="switch-slider round"></span>
           </label>
@@ -99,7 +105,7 @@ export default function SignalToggle({ signalName, weight, onChange }: SignalTog
             max="100"
             value={weight}
             onChange={handleSliderChange}
-            disabled={!isEnabled || isFutureSignal}
+            disabled={!isEnabled || isDisabled}
             className="weight-slider"
             aria-label={`${formatSignalName(signalName)} weight slider`}
           />

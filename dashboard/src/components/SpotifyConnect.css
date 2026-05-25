@@ -1,0 +1,218 @@
+.spotify-connect-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.spotify-connect-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.spotify-connect-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.spotify-branding-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 280px;
+}
+
+.spotify-icon-wrapper {
+  background: rgba(29, 185, 84, 0.1);
+  color: #1db954;
+  padding: 0.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.spotify-connect-card:hover .spotify-icon-wrapper {
+  transform: rotate(360deg);
+}
+
+.spotify-svg-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.spotify-text-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.spotify-connect-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.spotify-connect-desc {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.spotify-action-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 180px;
+}
+
+.spotify-connect-btn {
+  background-color: #1db954;
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(29, 185, 84, 0.25);
+  transition: all 0.2s ease;
+  font-family: var(--sans);
+}
+
+.spotify-connect-btn:hover {
+  background-color: #1ed760;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(29, 185, 84, 0.35);
+}
+
+.spotify-connect-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(29, 185, 84, 0.2);
+}
+
+.spotify-loader-container {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.spotify-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: #1db954;
+  border-radius: 50%;
+  animation: spotify-spin 0.8s linear infinite;
+}
+
+.spotify-loader-text {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.spotify-error-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+.spotify-error-icon {
+  font-size: 1rem;
+}
+
+.spotify-status-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.spotify-status-badge.connected .status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(29, 185, 84, 0.1);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  color: #1db954;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-dot-active {
+  width: 8px;
+  height: 8px;
+  background-color: #1db954;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-dot-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #1db954;
+  border-radius: 50%;
+  animation: spotify-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.status-subtext {
+  font-size: 0.75rem;
+  color: var(--text);
+  opacity: 0.8;
+  margin: 0;
+}
+
+@keyframes spotify-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spotify-ping {
+  75%, 100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .spotify-connect-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+  
+  .spotify-action-section {
+    justify-content: flex-start;
+  }
+  
+  .spotify-status-badge {
+    align-items: flex-start;
+  }
+}

@@ -101,6 +101,36 @@
   }
 }
 
+.segment-spotify {
+  background: #1db954;
+}
+
+@media (prefers-color-scheme: dark) {
+  .segment-spotify {
+    background: #1ed760;
+  }
+}
+
+.segment-weather {
+  background: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .segment-weather {
+    background: #38bdf8;
+  }
+}
+
+.segment-git {
+  background: #ea580c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .segment-git {
+    background: #fb923c;
+  }
+}
+
 .breakdown-list {
   list-style: none;
   padding: 0;
@@ -135,6 +165,36 @@
 @media (prefers-color-scheme: dark) {
   .dot-typing {
     background: #fb7185;
+  }
+}
+
+.dot-spotify {
+  background: #1db954;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dot-spotify {
+    background: #1ed760;
+  }
+}
+
+.dot-weather {
+  background: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dot-weather {
+    background: #38bdf8;
+  }
+}
+
+.dot-git {
+  background: #ea580c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dot-git {
+    background: #fb923c;
   }
 }
 
