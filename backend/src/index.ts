@@ -5,6 +5,7 @@ import { connectDb } from './db.js';
 import { corsMiddleware } from './middleware/cors.js';
 import { configRouter } from './routes/config.js';
 import { logsRouter } from './routes/logs.js';
+import { authRouter } from './routes/auth.js';
 import { createWebSocketServer } from './ws/server.js';
 
 dotenv.config();
@@ -20,6 +21,7 @@ async function main(): Promise<void> {
 
   app.use('/api/config', configRouter);
   app.use('/api/logs', logsRouter);
+  app.use('/auth', authRouter);
 
   app.get('/health', (_req, res) => {
     res.json({ ok: true });

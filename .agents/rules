@@ -1,11 +1,11 @@
 # MoodCode — Project Context
 
-Read before every response.
+Read MOODCODE_CONTEXT.md in full before every response.
 
-## Current phase: Phase 2 — Weighted mood engine + typing signal
-- MVP (time-based switching) is complete and deployed
-- We are building: weighted mood engine + typing signal
-- Do NOT implement Spotify, weather, or git signals yet (Phase 3)
+## Current phase: Phase 3 — Spotify + Weather + Git signals
+- Phases 1 (MVP) and 2 (weighted engine + typing) are complete and deployed
+- We are building: Spotify OAuth + polling, Weather signal, Git signal
+- Do NOT implement custom moods or Marketplace publishing yet (Phase 4)
 
 ## Architecture rules
 - No auth system — userId is a UUID from VS Code globalState. No JWT, no login.
@@ -22,9 +22,12 @@ Read before every response.
 
 ## Key behaviours
 - First-match-wins for bracket evaluation (top-to-bottom)
-- WebSocket carries config_update only — extension computes mood locally
-- Typing signal is privacy-first — only aggregate stats leave the machine (WPM, backspace ratio, pause count)
-- signalWeights stored in MongoDB, returned in GET /api/config/:userId
+- Spotify + weather signals come FROM backend via WebSocket — extension never calls these APIs directly
+- Git signal runs locally in extension via child_process — no backend involvement
+- Weather cached 15 minutes server-side
+- Spotify tokens refreshed server-side automatically
+- Weighted mood engine already built — just update signalScores.spotify / .weather / .git
+- SPOTIFY_REDIRECT_URI must be the Railway URL — cannot be localhost
 
 ## Source of truth
 Full project context is in MOODCODE_CONTEXT.md at the monorepo root.

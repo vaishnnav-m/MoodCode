@@ -1,5 +1,5 @@
 ---
-name: MoodCode Architecture
+name: moodcode-architecture
 description: >
   Load when working on MoodCode project structure, adding new signals,
   modifying shared types, changing the mood engine, updating WebSocket

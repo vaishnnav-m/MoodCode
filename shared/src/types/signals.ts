@@ -14,23 +14,25 @@ export interface TimeSignalPayload {
 
 /** Phase 2 — Spotify activity / audio features. */
 export interface SpotifySignalPayload {
+  energy: number;       // 0.0–1.0
+  valence: number;      // 0.0–1.0 (positivity)
+  tempo: number;        // BPM
+  acousticness: number; // 0.0–1.0
   isPlaying: boolean;
-  tempo?: number;
-  energy?: number;
-  valence?: number;
 }
 
 /** Phase 2 — OpenWeatherMap snapshot. */
 export interface WeatherSignalPayload {
-  tempC: number;
-  condition: string;
-  isDay: boolean;
+  condition: 'clear' | 'cloudy' | 'rainy' | 'stormy';
+  temperature: number;
 }
 
 /** Phase 2 — recent git activity in the workspace. */
 export interface GitSignalPayload {
-  commitsLastHour: number;
-  revertRatio: number;
+  commitFrequency: number;  // commits per hour
+  revertRatio: number;      // 0.0–1.0
+  fixCommitDensity: number; // ratio of fix: commits
+  minutesSinceLastCommit: number;
 }
 
 /** Phase 4 — editor typing patterns. */
