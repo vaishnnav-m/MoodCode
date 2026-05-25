@@ -1,4 +1,5 @@
 import type { MoodName, SignalWeights, TimeBracket } from '@moodcode/shared';
+import { DEFAULT_SIGNAL_WEIGHTS } from '@moodcode/shared';
 
 export interface SignalScores {
 	time?: MoodName;
@@ -25,9 +26,9 @@ function scoreToMood(score: number): MoodName {
 }
 
 function normalizeWeights(weights: SignalWeights): SignalWeights {
-	const total = Object.values(weights).reduce((a, b) => a + b, 0);
+	const total = weights.time + weights.typing + weights.spotify + weights.weather + weights.git;
 	if (total === 0) {
-		return weights;
+		return { ...weights };
 	}
 	return {
 		time: weights.time / total,
@@ -40,32 +41,32 @@ function normalizeWeights(weights: SignalWeights): SignalWeights {
 
 export function getMood(
 	brackets: TimeBracket[],
-	weights: SignalWeights,
-	signals: SignalScores,
+	weights: SignalWeights = DEFAULT_SIGNAL_WEIGHTS,
+	signals: SignalScores = {},
 ): MoodName {
 	const normalized = normalizeWeights(weights);
 	let weightedScore = 0;
 	let totalWeight = 0;
 
-	// Time signal
-	if (signals.time && normalized.time > 0) {
-		weightedScore += MOOD_SCORES[signals.time] * normalized.time;
-		totalWeight += normalized.time;
+	// Check each signal that has a score and a weight > 0
+	const signalNames: (keyof SignalWeights & keyof SignalScores)[] = [
+		'time',
+		'typing',
+		'spotify',
+		'weather',
+		'git',
+	];
+
+	for (const key of signalNames) {
+		const score = signals[key];
+		const weight = normalized[key];
+		if (score !== undefined && weight > 0) {
+			weightedScore += MOOD_SCORES[score] * weight;
+			totalWeight += weight;
+		}
 	}
 
-	// Typing signal
-	if (signals.typing && normalized.typing > 0) {
-		weightedScore += MOOD_SCORES[signals.typing] * normalized.typing;
-		totalWeight += normalized.typing;
-	}
-
-	// Future signals slot in here automatically
-	if (signals.spotify && normalized.spotify > 0) {
-		weightedScore += MOOD_SCORES[signals.spotify] * normalized.spotify;
-		totalWeight += normalized.spotify;
-	}
-
-	// Fallback to time if no signals available
+	// Fallback to time signal if no signals have a score and weight > 0
 	if (totalWeight === 0) {
 		return getTimeSignalMood(brackets);
 	}
@@ -79,8 +80,17 @@ function getTimeSignalMood(brackets: TimeBracket[]): MoodName {
 	}
 	const hour = new Date().getHours();
 	for (const bracket of brackets) {
-		if (hour >= bracket.start && hour < bracket.end) {
-			return bracket.mood;
+		const { start, end } = bracket;
+		if (start > end) {
+			// Wrap-around bracket (e.g. 22 to 6)
+			if (hour >= start || hour < end) {
+				return bracket.mood;
+			}
+		} else {
+			// Standard bracket (e.g. 10 to 22)
+			if (hour >= start && hour < end) {
+				return bracket.mood;
+			}
 		}
 	}
 	return 'deep_work';

@@ -10,7 +10,8 @@ import {
 import { randomUUID } from 'crypto';
 import * as vscode from 'vscode';
 import { registerCommands } from './commands.js';
-import { getMood } from './moodEngine.js';
+import { getMood, getTimeSignalMood, type SignalScores } from './moodEngine.js';
+import { createTypingTracker, getMoodFromTyping } from './signals/typingSignal.js';
 import { createOverrideManager } from './override.js';
 import { createStatusBar } from './statusBar.js';
 import { applyTheme } from './themeManager.js';
@@ -22,6 +23,7 @@ let brackets: TimeBracket[] = DEFAULT_BRACKETS;
 let themeMappings: Record<MoodName, string> = { ...THEME_DEFAULTS };
 let currentMood: MoodName | undefined;
 let signalWeights: SignalWeights = { ...DEFAULT_SIGNAL_WEIGHTS };
+let signalScores: SignalScores = {};
 
 async function getOrCreateUserId(context: vscode.ExtensionContext): Promise<string> {
 	let userId = context.globalState.get<string>(USER_ID_KEY);
@@ -81,9 +83,16 @@ export function activate(context: vscode.ExtensionContext): void {
 	const statusBar = createStatusBar();
 	context.subscriptions.push(statusBar);
 
+	const typingTracker = createTypingTracker();
+	context.subscriptions.push({ dispose: () => typingTracker.dispose() });
+
 	async function evaluateAndApply(): Promise<void> {
 		const activeOverride = overrideManager.getActive();
-		const mood = activeOverride ? activeOverride.mood : getMood(brackets);
+		signalScores.time = getTimeSignalMood(brackets);
+
+		console.log(`[MoodCode] Weights: ${JSON.stringify(signalWeights)}, Scores: ${JSON.stringify(signalScores)}`);
+
+		const mood = activeOverride ? activeOverride.mood : getMood(brackets, signalWeights, signalScores);
 		const source = activeOverride ? 'override' : 'time';
 
 		if (mood === currentMood) {
@@ -110,6 +119,9 @@ export function activate(context: vscode.ExtensionContext): void {
 		if (remoteConfig) {
 			brackets = remoteConfig.brackets;
 			themeMappings = remoteConfig.themeMappings;
+			if (remoteConfig.signalWeights) {
+				signalWeights = remoteConfig.signalWeights;
+			}
 		}
 
 		registerCommands(context, {
@@ -133,9 +145,22 @@ export function activate(context: vscode.ExtensionContext): void {
 			void evaluateAndApply();
 		}, pollIntervalMs);
 
+		const typingTimer = setInterval(() => {
+			if (overrideManager.isActive()) {
+				return;
+			}
+			if (signalWeights.typing > 0) {
+				const stats = typingTracker.getStats();
+				signalScores.typing = getMoodFromTyping(stats);
+				typingTracker.reset();
+				void evaluateAndApply();
+			}
+		}, 300000);
+
 		context.subscriptions.push(
 			{ dispose: () => wsClient.dispose() },
 			{ dispose: () => clearInterval(pollTimer) },
+			{ dispose: () => clearInterval(typingTimer) },
 		);
 	})();
 }
