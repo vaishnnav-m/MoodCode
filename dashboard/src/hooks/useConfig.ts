@@ -1,4 +1,4 @@
-import type { UserConfig } from '@moodcode/shared';
+import { type UserConfig, DEFAULT_SIGNAL_WEIGHTS } from '@moodcode/shared';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { getConfig, saveConfig } from '../api/config';
@@ -26,7 +26,10 @@ export function useConfig(userId: string | undefined) {
     setError(null);
     try {
       const data = await getConfig(userId);
-      setConfig(data);
+      setConfig({
+        ...data,
+        signalWeights: data.signalWeights ?? DEFAULT_SIGNAL_WEIGHTS,
+      });
     } catch (err) {
       setError(errorMessage(err));
     } finally {
@@ -35,6 +38,7 @@ export function useConfig(userId: string | undefined) {
   }, [userId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refetch();
   }, [refetch]);
 
@@ -47,11 +51,18 @@ export function useConfig(userId: string | undefined) {
       if (!payload) {
         return;
       }
+      const payloadWithWeights: UserConfig = {
+        ...payload,
+        signalWeights: payload.signalWeights ?? config?.signalWeights ?? DEFAULT_SIGNAL_WEIGHTS,
+      };
       setSaving(true);
       setError(null);
       try {
-        const data = await saveConfig(userId, payload);
-        setConfig(data);
+        const data = await saveConfig(userId, payloadWithWeights);
+        setConfig({
+          ...data,
+          signalWeights: data.signalWeights ?? DEFAULT_SIGNAL_WEIGHTS,
+        });
       } catch (err) {
         setError(errorMessage(err));
         throw err;

@@ -13,8 +13,8 @@ export const DEFAULT_BRACKETS: TimeBracket[] = [
 ];
 
 export const DEFAULT_SIGNAL_WEIGHTS: SignalWeights = {
-  time: 100,     // MVP: time is 100% until other signals are added
-  typing: 0,     // disabled until implemented
+  time: 100,
+  typing: 0,
   spotify: 0,
   weather: 0,
   git: 0,

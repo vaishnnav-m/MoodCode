@@ -1,0 +1,156 @@
+.signals-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .signals-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.signals-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.signals-summary-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  align-self: start;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.signals-summary-card h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+  text-align: left;
+}
+
+.summary-desc {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.visualization-container {
+  margin-bottom: 2rem;
+}
+
+.fallback-alert {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--code-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.fallback-alert p {
+  margin: 0;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.bar-visualizer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.segments-bar {
+  display: flex;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.segment {
+  height: 100%;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.segment-time {
+  background: var(--accent);
+}
+
+.segment-typing {
+  background: #f43f5e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .segment-typing {
+    background: #fb7185;
+  }
+}
+
+.breakdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-h);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+}
+
+.dot-time {
+  background: var(--accent);
+}
+
+.dot-typing {
+  background: #f43f5e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dot-typing {
+    background: #fb7185;
+  }
+}
+
+.breakdown-item .label {
+  flex: 1;
+  text-align: left;
+}
+
+.breakdown-item .value {
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+.save-button {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

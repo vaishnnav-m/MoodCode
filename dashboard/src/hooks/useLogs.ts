@@ -34,6 +34,7 @@ export function useLogs(userId: string | undefined) {
   }, [userId, days]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refetch();
   }, [refetch]);
 
