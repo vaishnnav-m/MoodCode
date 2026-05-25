@@ -16,6 +16,6 @@ export const corsMiddleware = cors({
     }
     callback(new Error(`CORS not allowed for origin: ${origin}`));
   },
-  methods: ['GET', 'PUT', 'POST', 'OPTIONS'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-user-id'],
 });
