@@ -2,174 +2,131 @@
 
 **Your VS Code theme, matched to your day.**
 
-MoodCode is a VS Code extension and local companion stack that switches your editor theme based on time of day and a personal mood config. A small backend and web dashboard let you edit time brackets, map moods to themes, and review mood history — all running on your machine.
-
-> **Status:** MVP — time-based theme switching. Spotify, weather, git, and typing signals are planned for later phases.
+MoodCode is a VS Code extension and personal web dashboard stack that switches your editor theme dynamically based on real-time signals from your environment. The system integrates multiple telemetry feeds—Spotify activity, typing patterns, local weather, and git commit behavior—to calculate your active developer mood and automatically apply your favorite themes.
 
 ---
 
-## Features
+## Status: Phase 3 Active
 
-- **Automatic theme switching** — Evaluates the current hour against configurable time brackets (morning, deep work, post-lunch, late night).
-- **Status bar mood indicator** — See your active mood at a glance.
-- **Manual override** — Pin a mood for 1, 2, or 4 hours from the command palette.
-- **Personal config dashboard** — React app at `localhost:5173` to edit brackets, themes, and view history.
-- **Real-time sync** — Dashboard saves push to the extension over WebSocket.
-- **Works offline** — Falls back to built-in defaults if the backend is unavailable.
+* **Phase 1 (Complete)**: Time bracket theme switching, status bar indicator, manual overrides, and WebSocket real-time sync.
+* **Phase 2 (Complete)**: Keystroke typing speed tracker, weighted mood engine, and interactive signal weight dashboard sliders.
+* **Phase 3 (Complete)**: Spotify OAuth audio feature telemetry, OpenWeatherMap IP geolocation updates, and local Git log pattern analyzer.
 
 ---
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-  subgraph vscode [VS Code]
-    EXT[Extension]
+flowchart TD
+  subgraph vscode [VS Code Extension]
+    EXT[Extension Client]
+    GIT[Git Log Analyzer]
+    TYPE[Keystroke Tracker]
   end
-  subgraph local [Local services]
-    API[Express + WebSocket]
-    DB[(MongoDB)]
-    UI[Dashboard]
+  subgraph local [Railway Backend Stack]
+    API[Express REST API]
+    WS[WebSocket Server]
+    SPOT[Spotify Poller]
+    WEATH[Weather Fetcher]
+    DB[(MongoDB Atlas)]
   end
-  EXT <-->|REST + WS| API
-  UI -->|REST| API
-  API --> DB
+  subgraph frontend [Vercel Dashboard]
+    UI[React Config App]
+  end
+  
+  EXT <-->|REST + WebSocket| WS
+  UI <-->|REST| API
+  API <--> DB
+  SPOT <-->|Spotify API| API
+  WEATH <-->|OpenWeatherMap| API
 ```
 
 | Package | Role |
 |---------|------|
-| [`shared/`](shared/) | Shared TypeScript types and constants |
-| [`extension/`](extension/) | VS Code extension (theme switching, status bar, commands) |
-| [`backend/`](backend/) | Express API, WebSocket server, MongoDB persistence |
-| [`dashboard/`](dashboard/) | React + Vite personal config UI |
+| [`shared/`](shared/) | Shared TypeScript types, constants, and validation schemas |
+| [`extension/`](extension/) | VS Code client: keystroke tracking, local Git child_processes, theme colors, and WebSocket synchronization |
+| [`backend/`](backend/) | Express server, WebSocket engine, MongoDB connections, Spotify polling, and IP-based weather caching |
+| [`dashboard/`](dashboard/) | React configuration interface, weight sliders, brackets builder, and mood log visualizer |
 
 ---
 
 ## Prerequisites
 
 - **Node.js** 20+ and npm
-- **MongoDB** running locally (default: `mongodb://localhost:27017/moodcode`)
+- **MongoDB Atlas** or a local instance
 - **VS Code** 1.120+
-- **Recommended themes** (install from the Marketplace): GitHub Light, Tokyo Night, One Dark Pro, Dracula
+- **Developer API Credentials**:
+  - Spotify Client ID and Client Secret (configured via Spotify Developer Dashboard)
+  - OpenWeatherMap API Key (from openweathermap.org)
 
 ---
 
-## Quick start (development)
+## Development Start
 
-```bash
-# Clone and install
-git clone https://github.com/your-org/moodcode.git
-cd moodcode
-npm install
+1. Install all monorepo dependencies:
+   ```bash
+   npm install
+   ```
 
-# Backend env (once)
-cp .env.example backend/.env
-# Edit backend/.env if your MongoDB URL differs
+2. Configure environment variables in `backend/.env`:
+   ```bash
+   cp .env.example backend/.env
+   # Populate MONGODB_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, and OPENWEATHER_API_KEY
+   ```
 
-# Start MongoDB, then from the repo root:
-npm run dev
-```
+3. Launch backend services and dashboard in development workspaces:
+   ```bash
+   npm run dev
+   ```
 
-This compiles `shared`, starts the **backend** (`http://localhost:3001`) and **dashboard** (`http://localhost:5173`).
-
-Open the repo in VS Code — workspace tasks can auto-start backend and dashboard on folder open (see [`.vscode/tasks.json`](.vscode/tasks.json)).
-
-To run the **extension** during development, press **F5** in VS Code (*Run Extension*) to open an Extension Development Host window.
-
-```bash
-# Build everything
-npm run build
-
-# Extension tests
-npm run test -w moodcode
-```
+4. Launch the extension inside VS Code:
+   * Press **F5** (*Run Extension*) to open a new Extension Development Host window.
 
 ---
 
-## Default moods & themes
+## Default Mood Configurations
 
-| Mood | Default hours | Default theme |
+Brackets are evaluated top-to-bottom (first-match-wins) inside the engine:
+
+| Mood | Default Hours | Default Theme |
 |------|---------------|---------------|
-| Morning | 06:00 – 10:00 | GitHub Light |
-| Deep work | 10:00 – 22:00 | Tokyo Night |
-| Post-lunch | 12:00 – 14:00 | One Dark Pro |
-| Late night | 22:00 – 06:00 | Dracula |
-
-Brackets are evaluated top-to-bottom; the first match wins. Place narrower brackets (e.g. post-lunch) before wider ones (e.g. deep work).
+| Morning | 06:00 – 10:00 | GitHub Light Default |
+| Post-Lunch | 12:00 – 14:00 | One Dark Pro |
+| Deep Work | 10:00 – 22:00 | Tokyo Night |
+| Late Night | 22:00 – 06:00 | Dracula |
 
 ---
 
-## Project structure
+## Environment Variables Configuration
 
-```
-moodcode/
-├── shared/          # Types, constants (dual CJS/ESM build)
-├── extension/       # VS Code extension
-├── backend/         # API + WebSocket + MongoDB
-├── dashboard/       # Config UI
-├── package.json     # npm workspaces root
-└── .env.example     # Environment template for backend
-```
+Environment variables used by the backend service (`backend/.env`):
 
----
-
-## Configuration
-
-Environment variables for the backend (`backend/.env`):
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `MONGODB_URI` | `mongodb://localhost:27017/moodcode` | MongoDB connection string |
-| `PORT` | `3001` | HTTP + WebSocket port |
-| `SESSION_SECRET` | — | Reserved for future OAuth |
-
-The extension and dashboard use localhost URLs by default. See [`extension/README.md`](extension/README.md) for VS Code settings.
+| Variable | Description |
+|----------|-------------|
+| `MONGODB_URI` | Connection string for MongoDB database instance |
+| `PORT` | Local server listener port (defaults to `3001`) |
+| `SESSION_SECRET` | Secret key used for session cryptographic signatures |
+| `SPOTIFY_CLIENT_ID` | App credential from the Spotify Developer Panel |
+| `SPOTIFY_CLIENT_SECRET` | Secret key from the Spotify Developer Panel |
+| `SPOTIFY_REDIRECT_URI` | OAuth redirect URI (e.g., `https://your-api.railway.app/auth/spotify/callback`) |
+| `OPENWEATHER_API_KEY` | API token generated on openweathermap.org |
 
 ---
 
-## Packaging the extension
+## Project Workspace Compilation
+
+Run compilation commands from the repository root:
 
 ```bash
-cd extension
-npx @vscode/vsce package
+# Rebuild shared ESM/CJS assets and bundle extension with esbuild
+npm run compile
+
+# Create the installable .vsix package
+npm run package -w extension
 ```
-
-Prepublish builds the extension and bundles the backend into `extension/server/` for a self-contained `.vsix`. MongoDB must still be available at runtime.
-
----
-
-## Roadmap
-
-| Phase | Focus |
-|-------|--------|
-| **MVP (current)** | Time-of-day signal, dashboard, logging, WebSocket config sync |
-| Phase 2 | Spotify, weather, git signals |
-| Phase 3 | Weighted mood scoring in dashboard |
-| Phase 4 | Typing pattern signal |
-| Later | Marketplace publish, shareable mood reports |
-
----
-
-## Contributing
-
-Contributions are welcome. Please open an issue before large changes.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-change`)
-3. Commit with clear messages
-4. Open a pull request
-
-For AI-assisted work in this repo, see [`MOODCODE_CONTEXT.md`](MOODCODE_CONTEXT.md) for architecture and MVP constraints.
 
 ---
 
 ## License
 
-MIT — see [`extension/package.json`](extension/package.json). A root `LICENSE` file may be added in a follow-up.
-
----
-
-## Links
-
-- [Extension README & marketplace docs](extension/README.md)
-- [VS Code Extension API](https://code.visualstudio.com/api)
+MIT

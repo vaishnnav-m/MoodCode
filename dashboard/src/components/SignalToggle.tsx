@@ -72,16 +72,14 @@ export default function SignalToggle({ signalName, weight, onChange, disabled = 
     }
   };
 
-  const isFutureSignal = false;
-  const isDisabled = isFutureSignal || disabled;
+  const isDisabled = disabled;
 
   return (
-    <div className={`signal-toggle-card ${isEnabled && !isDisabled ? 'active' : ''} ${isDisabled ? 'future-signal' : ''}`}>
+    <div className={`signal-toggle-card ${isEnabled && !isDisabled ? 'active' : ''}`}>
       <div className="signal-info">
         <div className="signal-header">
           <h3 className="signal-title">
             {formatSignalName(signalName)}
-            {isFutureSignal && <span className="badge">Soon</span>}
             {signalName === 'spotify' && disabled && <span className="badge">Needs Setup</span>}
           </h3>
           <label className="switch" aria-label={`Toggle ${formatSignalName(signalName)}`}>

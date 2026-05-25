@@ -1,4 +1,4 @@
-import type { ClientMessage, ServerMessage, TimeBracket, SpotifySignalPayload, SignalWeights } from '@moodcode/shared';
+import type { ClientMessage, ServerMessage, TimeBracket, SpotifySignalPayload, WeatherSignalPayload, SignalWeights } from '@moodcode/shared';
 import WebSocket from 'ws';
 
 export type ConfigUpdateHandler = (
@@ -7,6 +7,7 @@ export type ConfigUpdateHandler = (
 	signalWeights: SignalWeights
 ) => void;
 export type SpotifyUpdateHandler = (payload: SpotifySignalPayload) => void;
+export type WeatherUpdateHandler = (payload: WeatherSignalPayload) => void;
 
 export interface WsClient {
 	dispose(): void;
@@ -25,6 +26,7 @@ export function createWsClient(
 	userId: string,
 	onConfigUpdate: ConfigUpdateHandler,
 	onSpotifyUpdate: SpotifyUpdateHandler,
+	onWeatherUpdate: WeatherUpdateHandler,
 ): WsClient {
 	let ws: WebSocket | undefined;
 
@@ -56,6 +58,8 @@ export function createWsClient(
 				);
 			} else if (parsed.type === 'spotify_update' && parsed.payload) {
 				onSpotifyUpdate(parsed.payload);
+			} else if (parsed.type === 'weather_update' && parsed.payload) {
+				onWeatherUpdate(parsed.payload);
 			}
 		});
 

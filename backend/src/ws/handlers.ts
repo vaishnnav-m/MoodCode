@@ -2,6 +2,7 @@ import type { ClientMessage, ServerMessage } from '@moodcode/shared';
 import type { WebSocket } from 'ws';
 import { MoodLog } from '../models/MoodLog.js';
 import { startSpotifyPolling, stopSpotifyPolling } from '../services/spotifyPoller.js';
+import { startWeatherPolling, stopWeatherPolling } from '../services/weatherFetcher.js';
 
 const socketUsers = new Map<WebSocket, string>();
 
@@ -27,6 +28,7 @@ export function unregisterSocket(ws: WebSocket, wsMap: Map<string, WebSocket>): 
   if (wsMap.get(userId) === ws) {
     wsMap.delete(userId);
     stopSpotifyPolling(userId);
+    stopWeatherPolling(userId);
   }
   socketUsers.delete(ws);
 }
@@ -60,6 +62,8 @@ export async function handleClientMessage(
       wsMap.set(userId, ws);
       socketUsers.set(ws, userId);
       startSpotifyPolling(userId);
+      const ip = (ws as any).clientIp || '127.0.0.1';
+      startWeatherPolling(userId, ip);
       break;
     }
     case 'ping':

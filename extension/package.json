@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "publisher": "moodcode",
   "license": "MIT",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.120.0"
   },
@@ -30,12 +31,12 @@
       "properties": {
         "moodcode.backendUrl": {
           "type": "string",
-          "default": "http://localhost:3001",
+          "default": "https://moodcode-api-production.up.railway.app",
           "description": "Base URL for the MoodCode backend REST API."
         },
         "moodcode.wsUrl": {
           "type": "string",
-          "default": "ws://localhost:3001",
+          "default": "wss://moodcode-api-production.up.railway.app",
           "description": "WebSocket URL for real-time config updates from the dashboard."
         },
         "moodcode.pollIntervalMs": {
@@ -46,7 +47,7 @@
         },
         "moodcode.dashboardUrl": {
           "type": "string",
-          "default": "http://localhost:5173",
+          "default": "https://moodcode-dashboard.vercel.app",
           "description": "URL of the MoodCode config dashboard."
         }
       }

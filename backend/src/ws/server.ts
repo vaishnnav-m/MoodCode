@@ -48,8 +48,9 @@ export function createWebSocketServer(httpServer: Server): WebSocketServer {
   const wss = new WebSocketServer({ server: httpServer });
 
   wss.on('connection', (ws, req) => {
-    const ip = req.socket.remoteAddress;
+    const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() || req.socket.remoteAddress || '127.0.0.1';
     console.log(`[WS] Client connected from ${ip}`);
+    (ws as any).clientIp = ip;
 
     ws.on('message', (data) => {
       console.log(`[WS] Message received: ${data.toString()}`);

@@ -13,6 +13,8 @@ import { registerCommands } from './commands.js';
 import { getMood, getTimeSignalMood, type SignalScores } from './moodEngine.js';
 import { createTypingTracker, getMoodFromTyping } from './signals/typingSignal.js';
 import { getMoodFromSpotify } from './signals/spotifySignal.js';
+import { getMoodFromWeather } from './signals/weatherSignal.js';
+import { analyzeGitHistory, getMoodFromGit } from './signals/gitSignal.js';
 import { createOverrideManager } from './override.js';
 import { createStatusBar } from './statusBar.js';
 import { applyTheme } from './themeManager.js';
@@ -169,6 +171,20 @@ export function activate(context: vscode.ExtensionContext): void {
 			userId,
 		});
 
+		async function runGitSignal(): Promise<void> {
+			if (signalWeights.git > 0) {
+				const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+				if (!folder) {
+					return;
+				}
+				const payload = await analyzeGitHistory(folder);
+				if (payload) {
+					signalScores.git = getMoodFromGit(payload);
+					void evaluateAndApply();
+				}
+			}
+		}
+
 		const wsClient = createWsClient(
 			wsUrl,
 			userId,
@@ -180,6 +196,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				}
 				if (updatedSignalWeights) {
 					signalWeights = { ...signalWeights, ...updatedSignalWeights };
+					void runGitSignal();
 				}
 				void evaluateAndApply();
 			},
@@ -188,9 +205,16 @@ export function activate(context: vscode.ExtensionContext): void {
 				const spotifyMood = getMoodFromSpotify(spotifyPayload);
 				signalScores.spotify = spotifyMood;
 				void evaluateAndApply();
+			},
+			(weatherPayload) => {
+				console.log('[MoodCode] Received Weather WebSocket update.');
+				const weatherMood = getMoodFromWeather(weatherPayload);
+				signalScores.weather = weatherMood;
+				void evaluateAndApply();
 			}
 		);
 
+		void runGitSignal();
 		await evaluateAndApply();
 
 		const pollTimer = setInterval(() => {
@@ -212,10 +236,18 @@ export function activate(context: vscode.ExtensionContext): void {
 			}
 		}, 300000);
 
+		const gitTimer = setInterval(() => {
+			if (overrideManager.isActive()) {
+				return;
+			}
+			void runGitSignal();
+		}, 600000);
+
 		context.subscriptions.push(
 			{ dispose: () => wsClient.dispose() },
 			{ dispose: () => clearInterval(pollTimer) },
 			{ dispose: () => clearInterval(typingTimer) },
+			{ dispose: () => clearInterval(gitTimer) },
 		);
 	})();
 }
