@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getSpotifyStatus, initiateSpotifyConnect } from '../api/spotify';
+import { getSpotifyStatus, initiateSpotifyConnect, disconnectSpotify } from '../api/spotify';
 import './SpotifyConnect.css';
 
 interface SpotifyConnectProps {
@@ -57,6 +57,28 @@ export default function SpotifyConnect({ userId, onConnectionChange }: SpotifyCo
     initiateSpotifyConnect(userId);
   };
 
+  const handleDisconnect = async () => {
+    if (!userId) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await disconnectSpotify(userId);
+      setConnected(false);
+      setLoading(false);
+      if (onConnectionChange) {
+        onConnectionChange(false);
+      }
+    } catch (err) {
+      console.error('Failed to disconnect Spotify:', err);
+      setError('Failed to disconnect Spotify account');
+      setLoading(false);
+    }
+  };
+
   if (!userId) {
     return null;
   }
@@ -87,7 +109,7 @@ export default function SpotifyConnect({ userId, onConnectionChange }: SpotifyCo
           {loading ? (
             <div className="spotify-loader-container">
               <div className="spotify-spinner"></div>
-              <span className="spotify-loader-text">Checking status…</span>
+              <span className="spotify-loader-text">Processing…</span>
             </div>
           ) : error ? (
             <div className="spotify-error-container">
@@ -96,11 +118,20 @@ export default function SpotifyConnect({ userId, onConnectionChange }: SpotifyCo
             </div>
           ) : connected ? (
             <div className="spotify-status-badge connected">
-              <div className="status-label">
-                <span className="status-dot-active"></span>
-                <span className="status-text">Connected</span>
+              <div className="status-label-group">
+                <div className="status-label">
+                  <span className="status-dot-active"></span>
+                  <span className="status-text">Connected</span>
+                </div>
+                <span className="status-subtext">Backend poller is running</span>
               </div>
-              <span className="status-subtext">Backend poller is running</span>
+              <button
+                type="button"
+                className="spotify-disconnect-btn"
+                onClick={handleDisconnect}
+              >
+                Disconnect
+              </button>
             </div>
           ) : (
             <button

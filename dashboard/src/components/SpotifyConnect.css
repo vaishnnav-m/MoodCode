@@ -148,6 +148,21 @@
   gap: 0.2rem;
 }
 
+.spotify-status-badge.connected {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.status-label-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
 .spotify-status-badge.connected .status-label {
   display: inline-flex;
   align-items: center;
@@ -159,6 +174,29 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.spotify-disconnect-btn {
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--sans);
+}
+
+.spotify-disconnect-btn:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.spotify-disconnect-btn:active {
+  transform: scale(0.98);
 }
 
 .status-dot-active {
@@ -213,6 +251,10 @@
   }
   
   .spotify-status-badge {
+    align-items: flex-start;
+  }
+  
+  .status-label-group {
     align-items: flex-start;
   }
 }

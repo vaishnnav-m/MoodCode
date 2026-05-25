@@ -12,6 +12,7 @@ import * as vscode from 'vscode';
 import { registerCommands } from './commands.js';
 import { getMood, getTimeSignalMood, type SignalScores } from './moodEngine.js';
 import { createTypingTracker, getMoodFromTyping } from './signals/typingSignal.js';
+import { getMoodFromSpotify } from './signals/spotifySignal.js';
 import { createOverrideManager } from './override.js';
 import { createStatusBar } from './statusBar.js';
 import { applyTheme } from './themeManager.js';
@@ -59,7 +60,7 @@ async function logMoodSwitch(
 	userId: string,
 	mood: MoodName,
 	theme: string,
-	source: 'time' | 'override',
+	source: 'time' | 'typing' | 'spotify' | 'weather' | 'git' | 'override',
 ): Promise<void> {
 	try {
 		await fetch(`${backendUrl}/api/logs`, {
@@ -90,24 +91,55 @@ export function activate(context: vscode.ExtensionContext): void {
 		const activeOverride = overrideManager.getActive();
 		signalScores.time = getTimeSignalMood(brackets);
 
-		console.log(`[MoodCode] Weights: ${JSON.stringify(signalWeights)}, Scores: ${JSON.stringify(signalScores)}`);
+		console.log(`[MoodCode] Evaluating active weights and scores...`);
+		console.log(`  - Active Weights: ${JSON.stringify(signalWeights)}`);
+		console.log(`  - Active Signal Scores: ${JSON.stringify(signalScores)}`);
 
 		const mood = activeOverride ? activeOverride.mood : getMood(brackets, signalWeights, signalScores);
-		const source = activeOverride ? 'override' : 'time';
+		
+		let source: 'time' | 'typing' | 'spotify' | 'weather' | 'git' | 'override' = 'time';
+		if (activeOverride) {
+			source = 'override';
+			console.log(`[MoodCode] Override is active. Using pinned override mood: ${mood}`);
+		} else {
+			// Find the contributing signal with the highest configured weight
+			let maxWeight = 0;
+			let bestSource: 'time' | 'typing' | 'spotify' | 'weather' | 'git' = 'time';
+			
+			const signalNames: ('time' | 'typing' | 'spotify' | 'weather' | 'git')[] = [
+				'time', 'typing', 'spotify', 'weather', 'git'
+			];
+			
+			for (const key of signalNames) {
+				const weight = signalWeights[key] ?? 0;
+				const score = signalScores[key];
+				// Signal has contributed if it is configured and has an active score
+				if (score !== undefined && weight > maxWeight) {
+					maxWeight = weight;
+					bestSource = key;
+				}
+			}
+			source = bestSource;
+			console.log(`[MoodCode] Blended mood computed by engine: ${mood} (Primary driver source: ${source}, Max Weight: ${maxWeight}%)`);
+		}
 
 		if (mood === currentMood) {
 			statusBar.update(mood);
+			console.log(`[MoodCode] Mood '${mood}' matches the current editor state. No theme switch needed.`);
 			return;
 		}
 
+		console.log(`[MoodCode] Mood changed! Switching from '${currentMood}' to '${mood}'`);
 		currentMood = mood;
 		const theme = resolveTheme(mood);
 
+		console.log(`[MoodCode] Applying VS Code theme mapping: ${theme}`);
 		await applyTheme(theme);
 		statusBar.update(mood);
 
 		const userId = context.globalState.get<string>(USER_ID_KEY);
 		if (userId) {
+			console.log(`[MoodCode] Logging mood switch to database: Mood=${mood}, Theme=${theme}, Source=${source}`);
 			await logMoodSwitch(backendUrl, userId, mood, theme, source);
 		}
 	}
@@ -131,10 +163,21 @@ export function activate(context: vscode.ExtensionContext): void {
 			userId,
 		});
 
-		const wsClient = createWsClient(wsUrl, userId, (updatedBrackets) => {
-			brackets = updatedBrackets;
-			void evaluateAndApply();
-		});
+		const wsClient = createWsClient(
+			wsUrl,
+			userId,
+			(updatedBrackets) => {
+				console.log('[MoodCode] Received brackets configuration update via WebSocket.');
+				brackets = updatedBrackets;
+				void evaluateAndApply();
+			},
+			(spotifyPayload) => {
+				console.log('[MoodCode] Received Spotify WebSocket update.');
+				const spotifyMood = getMoodFromSpotify(spotifyPayload);
+				signalScores.spotify = spotifyMood;
+				void evaluateAndApply();
+			}
+		);
 
 		await evaluateAndApply();
 

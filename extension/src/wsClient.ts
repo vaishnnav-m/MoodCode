@@ -1,7 +1,8 @@
-import type { ClientMessage, ServerMessage, TimeBracket } from '@moodcode/shared';
+import type { ClientMessage, ServerMessage, TimeBracket, SpotifySignalPayload } from '@moodcode/shared';
 import WebSocket from 'ws';
 
 export type ConfigUpdateHandler = (brackets: TimeBracket[]) => void;
+export type SpotifyUpdateHandler = (payload: SpotifySignalPayload) => void;
 
 export interface WsClient {
 	dispose(): void;
@@ -12,13 +13,14 @@ function isServerMessage(value: unknown): value is ServerMessage {
 		return false;
 	}
 	const { type } = value as { type: unknown };
-	return type === 'config_update' || type === 'pong';
+	return type === 'config_update' || type === 'pong' || type === 'spotify_update';
 }
 
 export function createWsClient(
 	wsUrl: string,
 	userId: string,
 	onConfigUpdate: ConfigUpdateHandler,
+	onSpotifyUpdate: SpotifyUpdateHandler,
 ): WsClient {
 	let ws: WebSocket | undefined;
 
@@ -44,6 +46,8 @@ export function createWsClient(
 
 			if (parsed.type === 'config_update' && Array.isArray(parsed.brackets)) {
 				onConfigUpdate(parsed.brackets);
+			} else if (parsed.type === 'spotify_update' && parsed.payload) {
+				onSpotifyUpdate(parsed.payload);
 			}
 		});
 

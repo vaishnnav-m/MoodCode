@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SpotifyToken } from '../models/SpotifyToken.js';
+import { stopSpotifyPolling } from '../services/spotifyPoller.js';
 
 export const authRouter = Router();
 
@@ -139,5 +140,24 @@ authRouter.get('/spotify/status/:userId', async (req, res) => {
   } catch (err) {
     console.error('GET /auth/spotify/status/:userId failed:', err);
     res.status(500).json({ error: 'Failed to check Spotify status' });
+  }
+});
+
+// 4. DELETE /auth/spotify/:userId
+// Disconnects/logs out Spotify for a given userId, stopping poller and deleting DB record
+authRouter.delete('/spotify/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Stop polling first
+    stopSpotifyPolling(userId);
+    
+    // Delete database tokens
+    await SpotifyToken.deleteOne({ userId });
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('DELETE /auth/spotify/:userId failed:', err);
+    res.status(500).json({ error: 'Failed to disconnect Spotify' });
   }
 });

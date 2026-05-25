@@ -25,3 +25,14 @@ export async function getSpotifyStatus(userId: string): Promise<SpotifyStatusRes
 export function initiateSpotifyConnect(userId: string): void {
   window.location.href = `${BACKEND_URL}/auth/spotify?userId=${encodeURIComponent(userId)}`;
 }
+
+/**
+ * Disconnects the Spotify account for a given user ID.
+ * Calls DELETE /auth/spotify/:userId
+ */
+export async function disconnectSpotify(userId: string): Promise<{ success: boolean }> {
+  const { data } = await axios.delete<{ success: boolean }>(
+    `${BACKEND_URL}/auth/spotify/${userId}`
+  );
+  return data;
+}

@@ -62,11 +62,11 @@ export default function SignalToggle({ signalName, weight, onChange, disabled = 
       case 'typing':
         return 'Tracks WPM, backspaces, and typing pauses.';
       case 'spotify':
-        return 'Analyzes current tracks, tempo, and mood (Phase 3).';
+        return 'Analyzes current tracks, tempo, and mood.';
       case 'weather':
-        return 'Adapts to outside temperature and weather conditions (Phase 3).';
+        return 'Adapts to outside temperature and weather conditions.';
       case 'git':
-        return 'Measures git commit frequency and revert ratio (Phase 3).';
+        return 'Measures git commit frequency and revert ratio.';
       default:
         return 'Configure engine weight for this signal.';
     }
