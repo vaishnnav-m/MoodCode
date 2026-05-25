@@ -6,8 +6,6 @@
 /** Signals that feed the weighted mood engine (excludes manual `override`). */
 export type SignalName = 'time' | 'spotify' | 'weather' | 'git' | 'typing';
 
-/** Per-signal weights for mood scoring (future dashboard SignalsPage). */
-export type SignalWeights = Record<SignalName, number>;
 
 /** MVP — current hour from the local clock. */
 export interface TimeSignalPayload {

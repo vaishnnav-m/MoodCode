@@ -1,9 +1,11 @@
 import {
   DEFAULT_BRACKETS,
   THEME_DEFAULTS,
+  DEFAULT_SIGNAL_WEIGHTS,
   type MoodName,
   type TimeBracket,
   type UserConfig,
+  type SignalWeights,
 } from '@moodcode/shared';
 import { Schema, model, type HydratedDocument, type InferSchemaType } from 'mongoose';
 
@@ -29,11 +31,23 @@ const themeMappingsSchema = new Schema<UserConfig['themeMappings']>(
   { _id: false },
 );
 
+const signalWeightsSchema = new Schema<SignalWeights>(
+  {
+    time: { type: Number, required: true, min: 0, max: 100, default: DEFAULT_SIGNAL_WEIGHTS.time },
+    typing: { type: Number, required: true, min: 0, max: 100, default: DEFAULT_SIGNAL_WEIGHTS.typing },
+    spotify: { type: Number, required: true, min: 0, max: 100, default: DEFAULT_SIGNAL_WEIGHTS.spotify },
+    weather: { type: Number, required: true, min: 0, max: 100, default: DEFAULT_SIGNAL_WEIGHTS.weather },
+    git: { type: Number, required: true, min: 0, max: 100, default: DEFAULT_SIGNAL_WEIGHTS.git },
+  },
+  { _id: false },
+);
+
 const userSchema = new Schema(
   {
     userId: { type: String, required: true, unique: true, index: true },
     brackets: { type: [timeBracketSchema], required: true, default: () => DEFAULT_BRACKETS },
     themeMappings: { type: themeMappingsSchema, required: true, default: () => THEME_DEFAULTS },
+    signalWeights: { type: signalWeightsSchema, required: true, default: () => DEFAULT_SIGNAL_WEIGHTS },
   },
   { timestamps: true },
 );

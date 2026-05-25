@@ -1,0 +1,30 @@
+# MoodCode — Project Context
+
+Read before every response.
+
+## Current phase: Phase 2 — Weighted mood engine + typing signal
+- MVP (time-based switching) is complete and deployed
+- We are building: weighted mood engine + typing signal
+- Do NOT implement Spotify, weather, or git signals yet (Phase 3)
+
+## Architecture rules
+- No auth system — userId is a UUID from VS Code globalState. No JWT, no login.
+- Dashboard is personal — no multi-user, no roles.
+- shared/ types are source of truth — change types there first, then update consumers
+- Always recompile shared before building extension or dashboard
+- Extension uses esbuild bundling: `npm run bundle`, not `npm run compile`
+- Extension must work offline — falls back to DEFAULT_BRACKETS + DEFAULT_SIGNAL_WEIGHTS
+
+## Infrastructure
+- Backend: Railway (not localhost)
+- Dashboard: Vercel (not localhost)
+- DB: MongoDB Atlas
+
+## Key behaviours
+- First-match-wins for bracket evaluation (top-to-bottom)
+- WebSocket carries config_update only — extension computes mood locally
+- Typing signal is privacy-first — only aggregate stats leave the machine (WPM, backspace ratio, pause count)
+- signalWeights stored in MongoDB, returned in GET /api/config/:userId
+
+## Source of truth
+Full project context is in MOODCODE_CONTEXT.md at the monorepo root.

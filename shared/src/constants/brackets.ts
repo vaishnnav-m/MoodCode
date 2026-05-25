@@ -1,4 +1,5 @@
 import type { TimeBracket } from '../types/config.js';
+import type { SignalWeights } from '../types/config.js';
 
 /**
  * Default time brackets for offline / first-run. Order matters: post_lunch before
@@ -10,3 +11,11 @@ export const DEFAULT_BRACKETS: TimeBracket[] = [
   { start: 10, end: 22, mood: 'deep_work', theme: 'Tokyo Night' },
   { start: 22, end: 6, mood: 'late_night', theme: 'Dracula' },
 ];
+
+export const DEFAULT_SIGNAL_WEIGHTS: SignalWeights = {
+  time: 100,     // MVP: time is 100% until other signals are added
+  typing: 0,     // disabled until implemented
+  spotify: 0,
+  weather: 0,
+  git: 0,
+};

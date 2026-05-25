@@ -9,8 +9,14 @@ function isUserConfigBody(body: unknown): body is UserConfig {
   if (!body || typeof body !== 'object') {
     return false;
   }
-  const { brackets, themeMappings } = body as UserConfig;
-  return Array.isArray(brackets) && themeMappings !== null && typeof themeMappings === 'object';
+  const { brackets, themeMappings, signalWeights } = body as UserConfig;
+  return (
+    Array.isArray(brackets) &&
+    themeMappings !== null &&
+    typeof themeMappings === 'object' &&
+    signalWeights !== null &&
+    typeof signalWeights === 'object'
+  );
 }
 
 async function findOrCreateUser(userId: string) {
@@ -28,6 +34,7 @@ configRouter.get('/:userId', async (req, res) => {
     const config: UserConfig = {
       brackets: user.brackets,
       themeMappings: user.themeMappings,
+      signalWeights: user.signalWeights,
     };
     res.json(config);
   } catch (err) {
@@ -40,14 +47,14 @@ configRouter.put('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     if (!isUserConfigBody(req.body)) {
-      res.status(400).json({ error: 'Body must include brackets and themeMappings' });
+      res.status(400).json({ error: 'Body must include brackets, themeMappings, and signalWeights' });
       return;
     }
 
-    const { brackets, themeMappings } = req.body;
+    const { brackets, themeMappings, signalWeights } = req.body;
     const user = await User.findOneAndUpdate(
       { userId },
-      { brackets, themeMappings },
+      { brackets, themeMappings, signalWeights },
       { new: true, upsert: true, runValidators: true },
     );
 
@@ -61,6 +68,7 @@ configRouter.put('/:userId', async (req, res) => {
     const config: UserConfig = {
       brackets: user.brackets,
       themeMappings: user.themeMappings,
+      signalWeights: user.signalWeights,
     };
     res.json(config);
   } catch (err) {

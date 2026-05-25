@@ -1,6 +1,8 @@
 import {
 	DEFAULT_BRACKETS,
+	SignalWeights,
 	THEME_DEFAULTS,
+	DEFAULT_SIGNAL_WEIGHTS,
 	type MoodName,
 	type TimeBracket,
 	type UserConfig,
@@ -19,6 +21,7 @@ const USER_ID_KEY = 'moodcode.userId';
 let brackets: TimeBracket[] = DEFAULT_BRACKETS;
 let themeMappings: Record<MoodName, string> = { ...THEME_DEFAULTS };
 let currentMood: MoodName | undefined;
+let signalWeights: SignalWeights = { ...DEFAULT_SIGNAL_WEIGHTS };
 
 async function getOrCreateUserId(context: vscode.ExtensionContext): Promise<string> {
 	let userId = context.globalState.get<string>(USER_ID_KEY);
