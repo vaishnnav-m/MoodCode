@@ -31,12 +31,12 @@
       "properties": {
         "moodcode.backendUrl": {
           "type": "string",
-          "default": "https://moodcode-api-production.up.railway.app",
+          "default": "http://localhost:3001",
           "description": "Base URL for the MoodCode backend REST API."
         },
         "moodcode.wsUrl": {
           "type": "string",
-          "default": "wss://moodcode-api-production.up.railway.app",
+          "default": "http://localhost:3001",
           "description": "WebSocket URL for real-time config updates from the dashboard."
         },
         "moodcode.pollIntervalMs": {
@@ -47,7 +47,7 @@
         },
         "moodcode.dashboardUrl": {
           "type": "string",
-          "default": "https://moodcode-dashboard.vercel.app",
+          "default": "http://localhost:5173",
           "description": "URL of the MoodCode config dashboard."
         }
       }

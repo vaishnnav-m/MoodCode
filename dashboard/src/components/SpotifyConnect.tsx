@@ -100,8 +100,14 @@ export default function SpotifyConnect({ userId, onConnectionChange }: SpotifyCo
           <div className="spotify-text-details">
             <h3 className="spotify-connect-title">Spotify Integration</h3>
             <p className="spotify-connect-desc">
-              Sync your real-time listening activity (tempo, energy, and valence) with the MoodCode engine to dynamically drive your editor themes.
+              Sync your real-time listening activity with the MoodCode engine to dynamically drive your editor themes.
             </p>
+            <div className="spotify-premium-note">
+              <span className="premium-warning-icon" role="img" aria-label="info">ℹ️</span>
+              <span className="premium-warning-text">
+                A <strong>Spotify Premium</strong> subscription is required by Spotify for this integration to access playback state.
+              </span>
+            </div>
           </div>
         </div>
 

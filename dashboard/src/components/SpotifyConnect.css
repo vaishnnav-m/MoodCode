@@ -258,3 +258,36 @@
     align-items: flex-start;
   }
 }
+
+.spotify-premium-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #c2410c;
+  background: rgba(194, 65, 12, 0.05);
+  border: 1px solid rgba(194, 65, 12, 0.15);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+@media (prefers-color-scheme: dark) {
+  .spotify-premium-note {
+    color: #fdba74;
+    background: rgba(253, 186, 116, 0.04);
+    border-color: rgba(253, 186, 116, 0.15);
+  }
+}
+
+.premium-warning-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.premium-warning-text strong {
+  font-weight: 600;
+}

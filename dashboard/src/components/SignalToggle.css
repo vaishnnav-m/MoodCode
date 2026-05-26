@@ -18,13 +18,155 @@
 }
 
 .signal-toggle-card.active {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Time of Day Card Styling */
+.signal-toggle-card.signal-time.active {
   border-color: var(--accent);
   background: rgba(170, 59, 255, 0.02);
+  box-shadow: 0 4px 15px rgba(170, 59, 255, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
-  .signal-toggle-card.active {
+  .signal-toggle-card.signal-time.active {
     background: rgba(192, 132, 252, 0.03);
+  }
+}
+
+/* Typing Card Styling */
+.signal-toggle-card.signal-typing.active {
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.02);
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.04);
+}
+
+.signal-toggle-card.signal-typing.active input:checked + .switch-slider {
+  background-color: #f43f5e;
+}
+
+.signal-toggle-card.signal-typing.active .weight-slider::-webkit-slider-thumb {
+  background: #f43f5e;
+}
+.signal-toggle-card.signal-typing.active .weight-slider::-moz-range-thumb {
+  background: #f43f5e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .signal-toggle-card.signal-typing.active {
+    background: rgba(251, 113, 133, 0.03);
+    border-color: #fb7185;
+  }
+  .signal-toggle-card.signal-typing.active input:checked + .switch-slider {
+    background-color: #fb7185;
+  }
+  .signal-toggle-card.signal-typing.active .weight-slider::-webkit-slider-thumb {
+    background: #fb7185;
+  }
+  .signal-toggle-card.signal-typing.active .weight-slider::-moz-range-thumb {
+    background: #fb7185;
+  }
+}
+
+/* Spotify Card Styling */
+.signal-toggle-card.signal-spotify.active {
+  border-color: #1db954;
+  background: rgba(29, 185, 84, 0.02);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.04);
+}
+
+.signal-toggle-card.signal-spotify.active input:checked + .switch-slider {
+  background-color: #1db954;
+}
+
+.signal-toggle-card.signal-spotify.active .weight-slider::-webkit-slider-thumb {
+  background: #1db954;
+}
+.signal-toggle-card.signal-spotify.active .weight-slider::-moz-range-thumb {
+  background: #1db954;
+}
+
+@media (prefers-color-scheme: dark) {
+  .signal-toggle-card.signal-spotify.active {
+    background: rgba(30, 215, 96, 0.03);
+    border-color: #1ed760;
+  }
+  .signal-toggle-card.signal-spotify.active input:checked + .switch-slider {
+    background-color: #1ed760;
+  }
+  .signal-toggle-card.signal-spotify.active .weight-slider::-webkit-slider-thumb {
+    background: #1ed760;
+  }
+  .signal-toggle-card.signal-spotify.active .weight-slider::-moz-range-thumb {
+    background: #1ed760;
+  }
+}
+
+/* Weather Card Styling */
+.signal-toggle-card.signal-weather.active {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.02);
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.04);
+}
+
+.signal-toggle-card.signal-weather.active input:checked + .switch-slider {
+  background-color: #0284c7;
+}
+
+.signal-toggle-card.signal-weather.active .weight-slider::-webkit-slider-thumb {
+  background: #0284c7;
+}
+.signal-toggle-card.signal-weather.active .weight-slider::-moz-range-thumb {
+  background: #0284c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .signal-toggle-card.signal-weather.active {
+    background: rgba(56, 189, 248, 0.03);
+    border-color: #38bdf8;
+  }
+  .signal-toggle-card.signal-weather.active input:checked + .switch-slider {
+    background-color: #38bdf8;
+  }
+  .signal-toggle-card.signal-weather.active .weight-slider::-webkit-slider-thumb {
+    background: #38bdf8;
+  }
+  .signal-toggle-card.signal-weather.active .weight-slider::-moz-range-thumb {
+    background: #38bdf8;
+  }
+}
+
+/* Git Card Styling */
+.signal-toggle-card.signal-git.active {
+  border-color: #ea580c;
+  background: rgba(234, 88, 12, 0.02);
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.04);
+}
+
+.signal-toggle-card.signal-git.active input:checked + .switch-slider {
+  background-color: #ea580c;
+}
+
+.signal-toggle-card.signal-git.active .weight-slider::-webkit-slider-thumb {
+  background: #ea580c;
+}
+.signal-toggle-card.signal-git.active .weight-slider::-moz-range-thumb {
+  background: #ea580c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .signal-toggle-card.signal-git.active {
+    background: rgba(251, 146, 60, 0.03);
+    border-color: #fb923c;
+  }
+  .signal-toggle-card.signal-git.active input:checked + .switch-slider {
+    background-color: #fb923c;
+  }
+  .signal-toggle-card.signal-git.active .weight-slider::-webkit-slider-thumb {
+    background: #fb923c;
+  }
+  .signal-toggle-card.signal-git.active .weight-slider::-moz-range-thumb {
+    background: #fb923c;
   }
 }
 

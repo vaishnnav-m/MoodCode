@@ -19,6 +19,10 @@ export interface SpotifySignalPayload {
   tempo: number;        // BPM
   acousticness: number; // 0.0–1.0
   isPlaying: boolean;
+  genres?: string[];     // list of genres
+  trackName?: string;    // Name of the active track
+  albumName?: string;    // Name of the track's album
+  isExplicit?: boolean;  // Whether the track has explicit content
 }
 
 /** Phase 2 — OpenWeatherMap snapshot. */

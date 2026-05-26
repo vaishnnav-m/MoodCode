@@ -75,7 +75,7 @@ export default function SignalToggle({ signalName, weight, onChange, disabled = 
   const isDisabled = disabled;
 
   return (
-    <div className={`signal-toggle-card ${isEnabled && !isDisabled ? 'active' : ''}`}>
+    <div className={`signal-toggle-card signal-${signalName} ${isEnabled && !isDisabled ? 'active' : ''}`}>
       <div className="signal-info">
         <div className="signal-header">
           <h3 className="signal-title">
