@@ -69,21 +69,25 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
 }
 
 export async function pollUserSpotify(userId: string): Promise<void> {
+  console.log(`[Spotify] Initiating poll cycle for user ${userId}`);
   try {
     const accessToken = await getValidAccessToken(userId);
     if (!accessToken) {
-      // User has not connected Spotify yet
+      console.log(`[Spotify] No valid access token found for user ${userId} (user has not connected Spotify yet or token is invalid)`);
       return;
     }
 
-    const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
+    // Corrected endpoint from recently-played to currently-playing to get the active song
+    const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
 
+    console.log(`[Spotify] Player status API call for ${userId} returned HTTP status ${response.status}`);
+
     if (response.status === 204) {
-      // No track currently playing
+      console.log(`[Spotify] User ${userId} is not currently listening to any song (HTTP 204 No Content)`);
       const payload: SpotifySignalPayload = {
         isPlaying: false,
         energy: 0,
@@ -97,7 +101,7 @@ export async function pollUserSpotify(userId: string): Promise<void> {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`[Spotify] Currently playing fetch failed for user ${userId}:`, errText);
+      console.error(`[Spotify] Player status fetch failed for user ${userId}:`, errText);
       return;
     }
 
@@ -106,10 +110,17 @@ export async function pollUserSpotify(userId: string): Promise<void> {
       item: {
         id: string;
         type: string;
+        name?: string;
+        artists?: Array<{ name: string }>;
       } | null;
     };
 
     if (!currentPlaying.is_playing || !currentPlaying.item || currentPlaying.item.type !== 'track') {
+      const reason = !currentPlaying.is_playing 
+        ? 'Playback is paused' 
+        : (!currentPlaying.item ? 'No track item returned' : `Item type is ${currentPlaying.item.type} (expected track)`);
+      console.log(`[Spotify] User ${userId} is inactive: ${reason}`);
+
       const payload: SpotifySignalPayload = {
         isPlaying: false,
         energy: 0,
@@ -121,8 +132,14 @@ export async function pollUserSpotify(userId: string): Promise<void> {
       return;
     }
 
-    // Fetch audio features for the track
     const trackId = currentPlaying.item.id;
+    const trackName = currentPlaying.item.name || 'Unknown Track';
+    const artistNames = currentPlaying.item.artists?.map(a => a.name).join(', ') || 'Unknown Artist';
+
+    console.log(`[Spotify] Detected active playback for user ${userId}: "${trackName}" by ${artistNames} (ID: ${trackId})`);
+
+    // Fetch audio features for the track
+    console.log(`[Spotify] Fetching audio features for track ID ${trackId}`);
     const featuresResponse = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -142,6 +159,14 @@ export async function pollUserSpotify(userId: string): Promise<void> {
       acousticness: number;
     };
 
+    console.log(
+      `[Spotify] Retreived features for "${trackName}":\n` +
+      `  - Energy: ${features.energy}\n` +
+      `  - Valence: ${features.valence}\n` +
+      `  - Tempo: ${features.tempo} BPM\n` +
+      `  - Acousticness: ${features.acousticness}`
+    );
+
     const payload: SpotifySignalPayload = {
       isPlaying: true,
       energy: features.energy,
@@ -150,7 +175,8 @@ export async function pollUserSpotify(userId: string): Promise<void> {
       acousticness: features.acousticness,
     };
 
-    broadcastSpotifyUpdate(userId, payload);
+    const broadcastSuccess = broadcastSpotifyUpdate(userId, payload);
+    console.log(`[Spotify] Broadcasted payload to user ${userId} WebSockets: ${broadcastSuccess ? 'SUCCESS' : 'FAILED (no socket connected)'}`);
   } catch (err) {
     console.error(`[Spotify] Polling failed for user ${userId}:`, err);
   }
