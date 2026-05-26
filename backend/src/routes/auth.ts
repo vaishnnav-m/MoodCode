@@ -119,9 +119,7 @@ authRouter.get('/spotify/callback', async (req, res) => {
     );
 
     // Redirect the user back to the personal config dashboard
-    const frontendUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://your-vercel-url.vercel.app' 
-      : 'http://localhost:5173';
+    const frontendUrl = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
     res.redirect(`${frontendUrl}/signals?spotify=success`);
   } catch (err) {
